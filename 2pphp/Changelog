@@ -1,0 +1,64 @@
+Changelog
+=========
+* Tue Apr 20 14:26:16 EEST 2010 - Radu Spineanu <radu@2performant.com>
+  - 0.2.3 release
+  - changed initializer from &new to new
+
+* Fri Apr  9 10:43:21 EEST 2010 - Radu Spineanu <radu@2performant.com>
+  - 0.2.2 release
+  - change the ordering of arguments in commissions->search()
+    to avoid multiple null arguments in frequent use cases.
+  - updated the readme with proper initialization call for simple.
+
+* Wed Mar  3 20:01:03 PST 2010 - Radu Spineanu <radu@2performant.com>
+  - 0.2.1 release
+  - changed methods from widget_store to product_store
+
+* Mon Feb  8 16:44:05 PST 2010 - Radu Spineanu <radu@2performant.com>
+  - 0.2 release
+  - Added PEAR libraries to the tarball.
+  - API Versioning.
+  - OAuth support.
+  - A couple of new user_ methods.
+  - Fewer arguments in commissions_search (uses hash).
+
+* Mon Apr 23 12:01:49 EET 2009 - Radu Spineanu <radu@2performant.com>
+  - 0.1.6 release
+  - Added XML_SERIALIZER_OPTION_CDATA_SECTIONS to serialize().
+    Thanks to Valentin Agachi for the patch.
+  - Added a new option to _search called sort.
+  - Added a new option to WidgetStores list/search called uniq_products.
+    It makes sure the campaign prid pair is unique so it only returns 
+    uniq products.
+
+* Fri Feb 27 19:58:50 EET 2009 - Radu Spineanu <radu@2performant.com>
+  - 0.1.5 release
+  - Fixed minor bug where widget_store was expected instead of widget-store.
+
+* Wed Feb 18 14:02:37 EET 2009 - Radu Spineanu <radu@2performant.com>
+  - 0.1.4 release
+  - Added possibility of searching after transaction_ids in commissions.
+  - commissions_listformerchant() should expect campaign objects.
+  - fixed commissions_update() so it actually works.
+
+* Wed Jan 28 14:50:20 EET 2009 - Radu Spineanu <radu@2performant.com>
+  - 0.1.3 release
+  - changed the widget_store_search_products() arguments since it doesn't
+    need a widget_store_id anymore
+
+* Mon Jan 12 00:03:38 EET 2009 - Radu Spineanu <radu@2performant.com>
+  - 0.1.2 release
+  - renamed widget_store_showproducts() to widget_store_showitems() for code
+    unity.
+  - widget_store_showitems() should expect widget-store-data
+  - added widget_store_showitem() that's used when we know a product's id
+    (NOT prid)
+
+* Tue Dec 23 17:34:48 EET 2008 - Radu Spineanu <radu@2performant.com>
+  - 0.1.1 release
+  - send $request with txtlinks_list(), txtads_list() and $banner_list()
+    resulting in working pagination
+
+* Mon Nov 10 10:33:54 EET 2008 - Radu Spineanu <radu@2performant.com>
+  - 0.1 released
+  - initial release
