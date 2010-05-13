@@ -1,7 +1,7 @@
 <?php
 /* ================================
    2Performant.com Network API 
-   ver. 0.2.0
+   ver. 0.2.4
    http://help.2performant.com/API
    ================================ */
 
@@ -114,6 +114,26 @@ class TPerformant {
           }
 
           return $url;
+        }
+
+        /*=======*/
+        /* Sales */
+        /*=======*/
+
+        function sale_create($campaign_id, $sale) {
+                $request['sale'] = $sale;
+
+                return $this->hook("/campaigns/{$campaign_id}/sales.xml", "sale", $request, 'POST');
+        }
+
+        /*=======*/
+        /* Leads */
+        /*=======*/
+
+        function lead_create($campaign_id, $lead) {
+                $request['lead'] = $lead;
+
+                return $this->hook("/campaigns/{$campaign_id}/leads.xml", "lead", $request, 'POST');
         }
 
         /*============*/
@@ -351,6 +371,14 @@ class TPerformant {
                 return $this->hook("/campaigns/{$campaign_id}/banners/search.xml", "banner", $request, 'GET');
         }
 
+        /* Merchants: Create a banner */
+        function banner_create($campaign_id,$banner, $banner_image_url) {
+                $request['banner'] = $banner;
+                $request['banner_picture'] = array("url" => $banner_image_url);
+
+                return $this->hook("/campaigns/{$campaign_id}/banners.xml", "banner", $request, 'POST');
+        }
+
         /* Merchants: Update a banner */
         function banner_update($campaign_id, $banner_id, $banner) {
                 $request['banner'] = $banner;
@@ -363,22 +391,22 @@ class TPerformant {
         }
 
         /*===============*/
-        /* Widget Stores */
+        /* Product Stores */
         /*===============*/
 
-        /* List Widget Stores from a Campaign */
+        /* List Product Stores from a Campaign */
         function product_stores_list($campaign_id) {
                 $request['campaign_id'] = $campaign_id;
 
                 return $this->hook("/product_stores.xml", "product-store", $request);
         }
 
-        /* Show a WidgetStore */
+        /* Show a Product Store */
         function product_store_show($product_store_id) {
                 return $this->hook("/product_stores/{$product_store_id}.xml", "product-store");
         }
 
-        /* Show Products from a WidgetStore */
+        /* Show Products from a Product Store */
         function product_store_showitems($product_store_id, $category=null, $page=1, $perpage=6, $uniq_products=null) {
                 $request['category']      = $category;
                 $request['page']          = $page;
@@ -390,7 +418,7 @@ class TPerformant {
                 return $this->hook("/product_stores/{$product_store_id}/showitems.xml", "product-store-data", $request);
         }
 
-        /* Show a Product from a WidgetStore */
+        /* Show a Product from a Product Store */
         function product_store_showitem($product_store_id, $product_id) {
                 $request['product_id'] = $product_id;
 
@@ -398,7 +426,7 @@ class TPerformant {
         }
 
 
-        /* Search for Products in a WidgetStore */
+        /* Search for Products in a Product Store */
         function product_store_products_search($campaign_id, $search, $product_store_id='all', $category=null, $page=1, $perpage=6, $sort='date', $uniq_products=false) {
                 $request['page']          = $page;
                 $request['perpage']       = $perpage;
@@ -416,19 +444,19 @@ class TPerformant {
                 return $this->hook("/product_stores/{$product_store_id}/searchpr.xml", "product-store-data", $request, 'GET');
         }
 
-        /* Merchants: Update a WidgetStore */
+        /* Merchants: Update a Product Store */
         function product_store_update($product_store_id, $product_store) {
                 $request['product_store'] = $product_store;
                 return $this->hook("/product_stores/{$product_store_id}.xml", "product-store", $request, 'PUT');
         }
 
-        /* Merchants: Destroy a WidgetStore */
+        /* Merchants: Destroy a Product Store */
         function product_store_destroy($product_store_id) {
                 return $this->hook("/product_stores/{$product_store_id}.xml", "product-store", null, 'DELETE');
         }
 
         /* 
-           Merchants: Create a WidgetStoreProduct. 
+           Merchants: Create a Product Store Product. 
            WidgetStoreProduct must look like: 
               array("title" => "title", "description" => "desc", "caption" => "caption", "price" => "price(integer in RON)", 
                     "promoted" => "promoted (0 or 1)", "category" => "category", "subcategory" => "subcategory",  "url" => "url", 
@@ -469,6 +497,17 @@ class TPerformant {
                 return $this->hook("/ad_groups/{$ad_group_id}.xml", "ad_group", null, "GET");
         }
 
+        /* Affiliates: Add Item to Ad Group / Create new Ad Group */
+        function ad_group_createitem($group_id, $tool_type, $tool_id, $new_group=null) {
+                $request['group_id']  = $group_id;
+                $request['new_group'] = $new_group;
+
+                $request['tool_type'] = $tool_type;
+                $request['tool_id']   = $tool_id;
+
+                return $this->hook("/ad_groups/createitem.xml", "ad_group", $request, "POST");
+        }
+
         /* Affiliates: Destroy an Ad Group */
         function ad_group_destroy($ad_group_id) {
                 return $this->hook("/ad_groups/{$ad_group_id}.xml", "ad_group", null, "DELETE");
@@ -480,6 +519,35 @@ class TPerformant {
                 $request['tool_id']   = $tool_id;
 
                 return $this->hook("/ad_groups/{$ad_group_id}/destroyitem.xml", "ad_group", $request, "DELETE");
+        }
+
+        /*=================*/
+        /* Affiliate Feeds */
+        /*=================*/
+
+        /* Affiliates: List Feeds */
+        function feeds_list() {
+                return $this->hook("/feeds.xml", "feed", null, "GET");
+        }
+
+        /* Affiliates: Create a Feed */
+        function feed_create($feed) {
+                $request['feed'] = $feed;
+
+                return $this->hook("/feeds.xml", "feed", $request, 'POST');
+        }
+
+        /* Affiliates: Update a Feed */
+        function feed_update($feed_id, $feed) {
+                $request['feed'] = $feed;
+
+                return $this->hook("/feeds/{$feed_id}.xml", "feed", $request, 'PUT');
+        }
+
+
+        /* Affiliates: Destroy a Feed */
+        function feed_destroy($feed_id) {
+                return $this->hook("/feeds/{$feed_id}.xml", "feed", null, "DELETE");
         }
 
         /*==========*/
@@ -545,15 +613,15 @@ class TPerformant {
                 //authorize
                 $req->setAuth($this->user, $this->pass);
 
-                //set the headers
-                $req->setHeader("Accept", "application/xml");
-                $req->setHeader("Content-Type", "application/xml");
-           
                 if ($params) {
                         //serialize the data
                         $xml = $this->serialize($params);
                         ($xml)?$req->setBody($xml):false;
                 }
+
+                //set the headers
+                $req->setHeader("Accept", "application/xml");
+                $req->setHeader("Content-Type", "application/xml");
 
                 $response = $req->send();
 
@@ -566,6 +634,11 @@ class TPerformant {
 
         function oauthHttpRequest($url, $params, $method) {
                 $xml = null;
+
+                //set the headers
+                $this->oauthRequest->setHeader("Accept", "application/xml");
+                $this->oauthRequest->setHeader("Content-Type", "application/xml");
+
                 if ($params) {
                         //serialize the data
                         $xml = $this->serialize($params);
@@ -573,7 +646,7 @@ class TPerformant {
                         $this->oauthRequest->setBody($xml);
                         $this->oauth->accept($this->oauthRequest);
                 }
-                 
+                
                 $response = $this->oauth->sendRequest($url, array(), $method);
                 return $response->getBody();
         }

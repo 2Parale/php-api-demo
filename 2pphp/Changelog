@@ -1,5 +1,12 @@
 Changelog
 =========
+* Thu May 13 19:29:33 EEST 2010 - Radu Spineanu <radu@2performant.com>
+  - 0.2.4 release
+  - set Content-Type to application/xml when using OAuth
+  - disable default content-type in OAuth library
+  - new methods: sale_create, lead_create, banner_create
+    ad_group_createitem, feeds methods
+
 * Tue Apr 20 14:26:16 EEST 2010 - Radu Spineanu <radu@2performant.com>
   - 0.2.3 release
   - changed initializer from &new to new
