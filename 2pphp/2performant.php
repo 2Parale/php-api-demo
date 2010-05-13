@@ -372,9 +372,9 @@ class TPerformant {
         }
 
         /* Merchants: Create a banner */
-        function banner_create($campaign_id,$banner, $banner_image_url) {
+        function banner_create($campaign_id,$banner, $banner_picture) {
                 $request['banner'] = $banner;
-                $request['banner_picture'] = array("url" => $banner_image_url);
+                $request['banner_picture'] = $banner_picture;
 
                 return $this->hook("/campaigns/{$campaign_id}/banners.xml", "banner", $request, 'POST');
         }
