@@ -1,5 +1,9 @@
 Changelog
 =========
+* Thu Jun 10 21:21:07 EEST 2010 - Radu Spineanu <radu@2performant.com>
+   - 0.2.5 released
+   - updated the PHP wrapper 0.2.5
+
 * Thu May 13 20:15:16 EEST 2010 - Radu Spineanu <radu@2performant.com>
    - 0.2.4 released
    - updated the PHP wrapper to 0.2.4

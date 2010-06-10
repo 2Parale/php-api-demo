@@ -1,5 +1,9 @@
 Changelog
 =========
+* Wed Jun  9 01:36:52 EEST 2010 - Radu Spineanu <radu@2performant.com
+  - 0.2.5 release
+  - adds hooks_* methods
+
 * Thu May 13 19:29:33 EEST 2010 - Radu Spineanu <radu@2performant.com>
   - 0.2.4 release
   - set Content-Type to application/xml when using OAuth

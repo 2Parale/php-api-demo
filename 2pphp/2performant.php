@@ -1,7 +1,7 @@
 <?php
 /* ================================
    2Performant.com Network API 
-   ver. 0.2.4
+   ver. 0.2.5
    http://help.2performant.com/API
    ================================ */
 
@@ -578,6 +578,29 @@ class TPerformant {
         /* Destroy a message */
         function message_destroy($message_id) {
                 return $this->hook("/messages/{$message_id}.xml", "message", null, 'DELETE');
+        }
+
+
+        /*=======*/
+        /* Hooks */
+        /*=======*/
+    
+        /* List Hooks */
+        function hooks_list($oauth_token_key='current') {
+               return $this->hook("/oauth_clients/{$oauth_token_key}/hooks.xml", "hook", null, 'GET');
+        }
+
+
+        /* Create a Hook */
+        function hook_create($hook, $oauth_token_key='current') {
+               $request['hook'] = $hook;
+
+               return $this->hook("/oauth_clients/{$oauth_token_key}/hooks.xml", "hook", $request, 'POST');
+        }
+
+        /* Destroy a Hook */
+        function hook_destroy($hook_id, $oauth_token_key='current') {
+                return $this->hook("/oauth_clients/{$oauth_token_key}/hooks/{$hook_id}.xml", "hook", null, 'DELETE');
         }
 
 
