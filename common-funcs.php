@@ -1,23 +1,24 @@
 <?php
 
 function add_token($token, $secret, $network) {
-  global $DB;
+  global $DB, $SECRET;
 
-  $query = "INSERT INTO installations (token, secret, network) VALUES ('$token', '$secret', '$network')";
+  $public_token = md5($SECRET."-".$secret);
+  $query = "INSERT INTO installations (token, secret, public_token, network) VALUES ('$token', '$secret', '$public_token', '$network')";
   $result = $DB->Execute($query) or die("Error in query: $query. " . $DB->ErrorMsg());
 }
 
 function find_token($token) {
-  global $DB, $SECRET;
+  global $DB;
 
-  $result = $DB->Execute("SELECT * FROM installations");
-  while ($array = $result->FetchRow()) {
-    $possible_public = md5($SECRET."-".$array['secret']);
-    if ($possible_public == $token) {
-      return $array;
-    }
-  }
-  return null;
+  $result = $DB->Execute("SELECT * FROM installations WHERE token = ?", $token);
+  return $result->FetchRow();
 }
 
+function find_public_token($public_token) {
+  global $DB;
+
+  $result = $DB->Execute("SELECT * FROM installations WHERE public_token = ?", $public_token);
+  return $result->FetchRow();
+}
 ?>

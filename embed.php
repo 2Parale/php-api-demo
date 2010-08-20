@@ -3,7 +3,7 @@
   require 'config.php';
 
   if ($_GET['public_token']) {
-    $oauth_data = find_token($_GET['public_token']);
+    $oauth_data = find_public_token($_GET['public_token']);
     $width      = $_GET['width'];
     $height     = $_GET['height'];
     
