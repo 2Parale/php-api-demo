@@ -8,10 +8,16 @@ function add_token($token, $secret, $network) {
 }
 
 function find_token($token) {
-  global $DB;
+  global $DB, $SECRET;
 
-  $result = $DB->Execute("SELECT * FROM installations WHERE token = ?", $token);
-  return $result->FetchRow();
+  $result = $DB->Execute("SELECT * FROM installations");
+  while ($array = $result->FetchRow()) {
+    $possible_public = md5($SECRET."-".$array['secret']);
+    if ($possible_public == $token) {
+      return $array;
+    }
+  }
+  return null;
 }
 
 ?>
