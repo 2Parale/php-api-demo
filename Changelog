@@ -4,6 +4,10 @@ Changelog
   - 0.3.0 released
   - updated the PHP wrapper to 0.3.0
 
+* Fri Aug 20 20:17:21 EEST 2010 - Radu Spineanu <radu@2performant.com>
+   - 0.2.5.1 released
+   - embed.php now uses a public token
+
 * Thu Jun 10 21:21:07 EEST 2010 - Radu Spineanu <radu@2performant.com>
    - 0.2.5 released
    - updated the PHP wrapper 0.2.5
