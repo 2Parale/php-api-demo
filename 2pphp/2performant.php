@@ -1,7 +1,7 @@
 <?php
 /* ================================
    2Performant.com Network API 
-   ver. 0.2.5
+   ver. 0.3.0
    http://help.2performant.com/API
    ================================ */
 
@@ -150,9 +150,9 @@ class TPerformant {
         }
 
         /* Merchants: List affiliates approved in campaigns */
-	function affiliates_listformerchant($campaign_id=null) {
+	function affiliates_listforadvertiser($campaign_id=null) {
 		$request['campaign_id'] = $campaign_id;
-                return $this->hook("/affiliates/listformerchant", "user", $request, 'GET');
+                return $this->hook("/affiliates/listforadvertiser", "user", $request, 'GET');
         } 
        
         /*=============*/
@@ -175,12 +175,12 @@ class TPerformant {
         }
 
         /* Merchants: List commissions on campaigns. Month: 01 to 12; Year: 20xx. */
-        function commissions_listformerchant($campaign_id, $month, $year) {
+        function commissions_listforadvertiser($campaign_id, $month, $year) {
                 $request['campaign_id'] = $campaign_id;
 		$request['month']       = $month;
                 $request['year']        = $year;
 
-                return $this->hook("/commissions/listformerchant.xml", "campaign", $request, 'GET');
+                return $this->hook("/commissions/listforadvertiser.xml", "campaign", $request, 'GET');
         }
 
         /* Affiliates: List commissions on campaigns. Month: 01 to 12; Year: 20xx. */
@@ -580,6 +580,218 @@ class TPerformant {
                 return $this->hook("/messages/{$message_id}.xml", "message", null, 'DELETE');
         }
 
+        /*=================================*/
+        /*        ADMIN FUNCTIONS          */
+        /*=================================*/
+
+
+        /*====================*/
+        /* Affiliate Invoices */
+        /*====================*/
+
+        /* List Affiliate Invoices. Displays the first 15 entries by default. */
+        function admin_affiliate_invoices_list($page=1, $perpage=15) {
+                $request['page']        = $page;
+                $request['perpage']     = $perpage;
+
+                return $this->hook("/users/all/affiliate_invoices.xml", "affiliate-invoice", $request, 'GET');
+        }
+
+        /* Search for Affiliate Invoices */
+        function admin_affiliate_invoices_search($search, $page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+                $request['search']  = $search;
+
+                return $this->hook("/affiliate_invoices/search.xml", "affiliate-invoice", $request, 'POST');
+        }
+
+        /* Create an Affiliate Invoice */
+        function admin_affiliate_invoice_create($user_id, $affiliate_invoice, $commissions, $taxes) {
+                $request['affiliate_invoice'] = $affiliate_invoice;
+                $request['commissions'] = $commissions;
+                $request['taxes'] = $taxes;
+
+                return $this->hook("/users/$user_id/affiliate_invoices.xml", "affiliate-invoice", $request, 'POST');
+        }      
+ 
+        /* Update an Affiliate Invoice */      
+        function admin_affiliate_invoice_update($user_id, $affiliate_invoice_id, $affiliate_invoice, $taxes=null) {
+                $request['affiliate_invoice'] = $affiliate_invoice;
+                $request['taxes'] = $taxes;
+
+                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.xml", "affiliate-invoice", $request, 'PUT');
+        }
+
+        /* Destroy an Affiliate Invoice */
+        function admin_affiliate_invoice_destroy($user_id, $affiliate_invoice_id) {
+                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.xml", "affiliate-invoice", null, 'DELETE');
+        }
+
+        /*=====================*/
+        /* Advertiser Invoices */
+        /*=====================*/
+
+        /* List Advertiser Invoices. Displays the first 15 entries by default. */
+        function admin_advertiser_invoices_list($page=1, $perpage=15) {
+                $request['page']        = $page;
+                $request['perpage']     = $perpage;
+
+                return $this->hook("/users/all/advertiser_invoices.xml", "advertiser-invoice", $request, 'GET');
+        }
+
+        /* Search for Advertiser Invoices */
+        function admin_advertiser_invoices_search($search, $page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+                $request['search']  = $search;
+
+                return $this->hook("/advertiser_invoices/search.xml", "advertiser-invoice", $request, 'POST');
+        }
+
+        /* Create an Advertiser Invoice */
+        function admin_advertiser_invoice_create($user_id, $advertiser_invoice, $commissions, $taxes) {
+                $request['advertiser_invoice'] = $advertiser_invoice;
+                $request['commissions'] = $commissions;
+                $request['taxes'] = $taxes;
+
+                return $this->hook("/users/$user_id/advertiser_invoices.xml", "advertiser-invoice", $request, 'POST');
+        }
+
+        /* Update an Advertiser Invoice */
+        function admin_advertiser_invoice_update($user_id, $advertiser_invoice_id, $advertiser_invoice, $taxes=null) {
+                $request['advertiser_invoice'] = $advertiser_invoice;
+                $request['taxes'] = $taxes;
+
+                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.xml", "advertiser-invoice", $request, 'PUT');
+        }
+
+        /* Destroy an Advertiser Invoice */
+        function admin_advertiser_invoice_destroy($user_id, $advertiser_invoice_id) {
+                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.xml", "advertiser-invoice", null, 'DELETE');
+        }
+
+
+        /*=================*/
+        /* Admin Campaigns */
+        /*=================*/
+
+        /* List Campaigns. Displays the first 15 entries by default. */
+        function admin_campaigns_list($page=1, $perpage=15) {
+                $request['page']        = $page;
+                $request['perpage']     = $perpage;
+
+                return $this->hook("/campaigns.xml", "campaign", $request, 'GET');
+        }
+
+        /* Search for Advertiser Invoices */
+        function admin_campaigns_search($search, $page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+                $request['search']  = $search;
+
+                return $this->hook("/campaigns/search.xml", "campaign", $request, 'POST');
+        }
+
+
+        /* Search for Advertiser Invoices */
+        function admin_campaign_update($campaign_id, $suspend=null, $reset=null) {
+                $request['suspend'] = $suspend;
+                $request['reset']   = $reset;
+
+                return $this->hook("/campaigns/$campaign_id.xml", "campaign", $request, 'PUT');
+        }
+
+        /* Destroy a Campaign */
+        function admin_campaign_destroy($campaign_id) {
+                return $this->hook("/campaigns/$campaign_id.xml", "campaign", null, 'DELETE');
+        }
+
+        /*===================*/
+        /* Admin Commissions */
+        /*===================*/
+
+        /* List Affiliates Commissions  */
+        function admin_affiliates_commissions_list($search=null, $page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+                $request['search']  = $search;
+
+                return $this->hook("/commissions/affiliates", "commission", $request, 'GET');
+        }
+
+        /* List Advertiser Commissions  */
+        function admin_advertisers_commissions_list($search=null, $page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+                $request['search']  = $search;
+
+                return $this->hook("/commissions/advertisers", "commission", $request, 'GET');
+        }
+
+        /*==========*/
+        /* Deposits */
+        /*==========*/
+
+        /* List Deposits */
+        function admin_deposits_list($page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+
+                return $this->hook("/deposits.xml", "deposit", $request, 'GET');
+        }
+
+        /* Create a Deposit */
+        function admin_deposit_create($deposit) {
+                $request['deposit'] = $deposit;
+
+                return $this->hook("/users/all/deposits.xml", "deposit", $request, 'POST');
+        }
+
+        /* Destroy a Deposit */
+        function admin_deposit_destroy($user_id, $deposit_id) {
+                return $this->hook("/users/$user_id/deposits/$deposit_id.xml", "deposit", null, 'DELETE');
+        }
+
+
+        /*=============*/
+        /* Admin Users */
+        /*=============*/
+
+        /* List Users */
+        function admin_users_list($page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+
+                return $this->hook("/users.xml", "user", $request, 'GET');
+        }
+
+        /* Search for Users */
+        function admin_users_search($search=null, $page=1, $perpage=15) {
+                $request['page']    = $page;
+                $request['perpage'] = $perpage;
+                $request['search']  = $search;
+
+                return $this->hook("/users/search.xml", "user", $request, 'POST');
+        }
+
+        /* List Pending Users */
+        function admin_users_pending_list() {
+                return $this->hook("/users/pending.xml", "user", null, 'GET');
+        }
+
+        /* Process (Accept/Reject) a Pending User */
+        function admin_users_pending_process($user_id, $status, $message=null) {
+                $request['status'] = $status;
+                $request['message'] = $message;
+
+                return $this->hook("/users/$user_id/pending_process.xml", "user", $request, 'POST');
+        }
+
+        /* Destroy a User */
+        function admin_user_destroy($user_id) {
+                return $this->hook("/users/$user_id.xml", "user", null, 'DELETE');
+	}
 
         /*=======*/
         /* Hooks */
@@ -621,7 +833,12 @@ class TPerformant {
 	}
 	
 	function request($url, $params = null, $method) {
-                $url = $this->host . "/" . $this->version . $url;
+                if (strpos($method, "admin_") == 0) {
+                  $admin_url = str_replace("api.", "admin.", $url);
+                  $url = $this->host . "/" . $admin_url;
+                } else {
+                  $url = $this->host . "/" . $this->version . $url;
+                }
 
                 if ($this->auth_type == 'simple') {
                         return $this->simpleHttpRequest($url, $params, $method);

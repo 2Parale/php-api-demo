@@ -1,6 +1,11 @@
 Changelog
 =========
-* Wed Jun  9 01:36:52 EEST 2010 - Radu Spineanu <radu@2performant.com
+* Sun Nov 28 16:09:54 EET 2010 - Radu Spineanu <radu@2performant.com>
+  - 0.3.0 release
+  - admin_api methods
+  - changed from _merchant methods to _advertiser methods
+
+* Wed Jun  9 01:36:52 EEST 2010 - Radu Spineanu <radu@2performant.com>
   - 0.2.5 release
   - adds hooks_* methods
 
