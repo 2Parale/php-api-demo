@@ -1,7 +1,7 @@
 <?php
 /* ================================
    2Performant.com Network API 
-   ver. 0.3.0
+   ver. 0.4.0
    http://help.2performant.com/API
    ================================ */
 
@@ -10,9 +10,8 @@ ini_set(
   ini_get( 'include_path' ) . PATH_SEPARATOR . "2pphp/PEAR/" . PATH_SEPARATOR . "2pphp/" . PATH_SEPARATOR . "PEAR/"
 );
 
+require 'PEAR.php';
 require_once 'HTTP/Request2.php';
-require_once 'XML/Serializer.php';
-require_once 'XML/Unserializer.php';
 require_once 'HTTP/OAuth.php';
 require_once 'HTTP/OAuth/Consumer.php';
 
@@ -34,7 +33,7 @@ class TPerformant {
                     $this->oauth = $auth_obj;
 
                     $this->oauthRequest = new HTTP_Request2;
-                    $this->oauthRequest->setHeader('Content-type: text/xml; charset=utf-8');
+                    $this->oauthRequest->setHeader('Content-type: text/json; charset=utf-8');
                 } else {
                     return false;
                 }
@@ -49,12 +48,25 @@ class TPerformant {
 
         /* Display public information about a user */
         function user_show($user_id) {
-                return $this->hook("/users/{$user_id}.xml", "user");
+                return $this->hook("/users/{$user_id}.json", "user");
         }
 
         /* Display public information about the logged in user */
         function user_loggedin() {
-                return $this->hook("/users/loggedin.xml", "user");
+                return $this->hook("/users/loggedin.json", "user");
+        }
+
+        /* Create a new User */
+        function user_create($user, $user_info, $fast_activation = 0) {
+                if (!$user)
+                  $user = array();
+
+                $user['fast_activation'] = $fast_activation;
+
+                $request['user'] = $user;
+		$request['user_info'] = $user_info;
+
+                return $this->hook("/users.json", "user", $request, 'POST');
         }
 
         /*===========*/
@@ -67,7 +79,7 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage; 
          
-                return $this->hook("/campaigns.xml", "campaign", $request, 'GET');
+                return $this->hook("/campaigns.json", "campaign", $request, 'GET');
         }
 
         /* Search for campaigns */
@@ -76,33 +88,33 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
                
-                return $this->hook("/campaigns/search.xml", "campaign", $request, 'GET');
+                return $this->hook("/campaigns/search.json", "campaign", $request, 'GET');
         }
 
         /* Display public information about a campaign */
         function campaign_show($campaign_id) {
-                return $this->hook("/campaigns/{$campaign_id}.xml", "campaign");
+                return $this->hook("/campaigns/{$campaign_id}.json", "campaign");
         }
 
         /* Affiliates: List campaigns which have the logged in user accepted */
         function campaigns_listforaffiliate() {
-                return $this->hook("/campaigns/listforaffiliate.xml", "campaign");
+                return $this->hook("/campaigns/listforaffiliate.json", "campaign");
         }
 
         /* Merchants: List all campaigns created by the logged in user */
         function campaigns_listforowner() {
-                return $this->hook("/campaigns/listforowner.xml", "campaign");
+                return $this->hook("/campaigns/listforowner.json", "campaign");
         }
 
         /* Merchants: Display complete information about a campaign (only available to owner) */
         function campaign_showforowner($campaign_id) {
-                return $this->hook("/campaigns/{$campaign_id}/showforowner.xml", "campaign");
+                return $this->hook("/campaigns/{$campaign_id}/showforowner.json", "campaign");
         }
          
         /* Merchants: Update a campaign */
         function campaign_update($campaign_id, $campaign) {
                 $request['campaign'] = $campaign;
-                return $this->hook("/campaigns/{$campaign_id}.xml", "campaign", $request, 'PUT');
+                return $this->hook("/campaigns/{$campaign_id}.json", "campaign", $request, 'PUT');
         }
       
         /* Create a Deep Link. This method was created so it wouldn't make a request for every Quick Link.
@@ -123,7 +135,7 @@ class TPerformant {
         function sale_create($campaign_id, $sale) {
                 $request['sale'] = $sale;
 
-                return $this->hook("/campaigns/{$campaign_id}/sales.xml", "sale", $request, 'POST');
+                return $this->hook("/campaigns/{$campaign_id}/sales.json", "sale", $request, 'POST');
         }
 
         /*=======*/
@@ -133,7 +145,7 @@ class TPerformant {
         function lead_create($campaign_id, $lead) {
                 $request['lead'] = $lead;
 
-                return $this->hook("/campaigns/{$campaign_id}/leads.xml", "lead", $request, 'POST');
+                return $this->hook("/campaigns/{$campaign_id}/leads.json", "lead", $request, 'POST');
         }
 
         /*============*/
@@ -171,7 +183,7 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/commissions/search.xml", "commission", $request, 'GET');
+                return $this->hook("/commissions/search.json", "commission", $request, 'GET');
         }
 
         /* Merchants: List commissions on campaigns. Month: 01 to 12; Year: 20xx. */
@@ -180,7 +192,7 @@ class TPerformant {
 		$request['month']       = $month;
                 $request['year']        = $year;
 
-                return $this->hook("/commissions/listforadvertiser.xml", "campaign", $request, 'GET');
+                return $this->hook("/commissions/listforadvertiser.json", "campaign", $request, 'GET');
         }
 
         /* Affiliates: List commissions on campaigns. Month: 01 to 12; Year: 20xx. */
@@ -189,18 +201,18 @@ class TPerformant {
                 $request['month']       = $month;
                 $request['year']        = $year;
 
-                return $this->hook("/commissions/listforaffiliate.xml", "commission", $request, 'GET');
+                return $this->hook("/commissions/listforaffiliate.json", "commission", $request, 'GET');
         }
 
 	/* Merchant Campaign Owner or Affiliate Commission Owner: Show information about a commission */
         function commission_show($commission_id) {
-                return $this->hook("/commissions/{$commission_id}.xml", "commission");
+                return $this->hook("/commissions/{$commission_id}.json", "commission");
         }
 
         /* Merchant: Update a commission */
         function commission_update($commission_id, $commission) {
                 $request['commission'] = $commission;
-                return $this->hook("/commissions/{$commission_id}.xml", "commission", $request, 'PUT');
+                return $this->hook("/commissions/{$commission_id}.json", "commission", $request, 'PUT');
         }
 
         /*=======*/
@@ -213,12 +225,12 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage;
 
-                return $this->hook("/sites.xml", "site", $request);
+                return $this->hook("/sites.json", "site", $request);
         }
 
         /* Display information about a site */
         function site_show($site_id) {
-                return $this->hook("/sites/{$site_id}.xml", "site");
+                return $this->hook("/sites/{$site_id}.json", "site");
         }
 
         /* Search for sites */
@@ -227,24 +239,24 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/sites/search.xml", "site", $request, 'GET');
+                return $this->hook("/sites/search.json", "site", $request, 'GET');
         }
 
         /* Affiliates: List all sites created by the logged in user */
         function sites_listforowner() {
-                return $this->hook("/sites/listforowner.xml", "site");
+                return $this->hook("/sites/listforowner.json", "site");
         }
 
         /* Affiliates: Update a site */
         function site_update($site_id, $site) {
                 $request['site'] = $site;
-                return $this->hook("/sites/{$site_id}.xml", "site", $request, 'PUT');
+                return $this->hook("/sites/{$site_id}.json", "site", $request, 'PUT');
         }
 
 
         /* Affiliates: Destroy a site */
         function site_destroy($site_id) {
-                return $this->hook("/sites/{$site_id}.xml", "site", $request, 'DELETE');
+                return $this->hook("/sites/{$site_id}.json", "site", $request, 'DELETE');
         }
 
         /*============*/
@@ -256,12 +268,12 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/campaigns/{$campaign_id}/txtlinks.xml", "txtlink", $request, 'GET');
+                return $this->hook("/campaigns/{$campaign_id}/txtlinks.json", "txtlink", $request, 'GET');
         }
 
         /* Display information about a text link */
         function txtlink_show($campaign_id, $txtlink_id) {
-                return $this->hook("/campaigns/{$campaign_id}/txtlinks/{$txtlink_id}.xml", "txtlink");
+                return $this->hook("/campaigns/{$campaign_id}/txtlinks/{$txtlink_id}.json", "txtlink");
         }
 
         /* Search for text links in a campaign */
@@ -271,7 +283,7 @@ class TPerformant {
                 $request['search']  = $search;
                 $request['sort']    = $sort;
 
-                return $this->hook("/campaigns/{$campaign_id}/txtlinks/search.xml", "txtlink", $request, 'GET');
+                return $this->hook("/campaigns/{$campaign_id}/txtlinks/search.json", "txtlink", $request, 'GET');
         }
 
         /* 
@@ -281,18 +293,18 @@ class TPerformant {
         function txtlink_create($campaign_id, $txtlink) {
 		$request['txtlink'] = $txtlink;
 
-                return $this->hook("/campaigns/{$campaign_id}/txtlinks.xml", "txtlink", $request, 'POST');
+                return $this->hook("/campaigns/{$campaign_id}/txtlinks.json", "txtlink", $request, 'POST');
         }
 
         /* Merchants: Update a text link */
         function txtlink_update($campaign_id, $txtlink_id, $txtlink) {
                 $request['txtlink'] = $txtlink;
-                return $this->hook("/campaigns/{$campaign_id}/txtlinks/{$txtlink_id}.xml", "txtlink", $request, 'PUT');
+                return $this->hook("/campaigns/{$campaign_id}/txtlinks/{$txtlink_id}.json", "txtlink", $request, 'PUT');
         }
 
         /* Merchants: Destroy a text link */
         function txtlink_destroy($campaign_id, $txtlink_id) {
-                return $this->hook("/campaigns/{$campaign_id}/txtlinks/{$txtlink_id}.xml", "txtlink", null, 'DELETE');
+                return $this->hook("/campaigns/{$campaign_id}/txtlinks/{$txtlink_id}.json", "txtlink", null, 'DELETE');
         }
 
         /*============*/
@@ -304,12 +316,12 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/campaigns/{$campaign_id}/txtads.xml", "txtad", $request, 'GET');
+                return $this->hook("/campaigns/{$campaign_id}/txtads.json", "txtad", $request, 'GET');
         }
 
         /* Display information about a text ad */
         function txtad_show($campaign_id, $txtad_id) {
-                return $this->hook("/campaigns/{$campaign_id}/txtads/{$txtad_id}.xml", "txtad");
+                return $this->hook("/campaigns/{$campaign_id}/txtads/{$txtad_id}.json", "txtad");
         }
 
         /* Search for text ads in a campaign */
@@ -319,7 +331,7 @@ class TPerformant {
                 $request['search']  = $search;
                 $request['sort']    = $sort;
 
-                return $this->hook("/campaigns/{$campaign_id}/txtads/search.xml", "txtad", $request, 'GET');
+                return $this->hook("/campaigns/{$campaign_id}/txtads/search.json", "txtad", $request, 'GET');
         }
 
         /* 
@@ -328,20 +340,19 @@ class TPerformant {
         */
         function txtad_create($campaign_id, $txtad) {
                 $request['txtad'] = $txtad;
-        
-                return $this->hook("/campaigns/{$campaign_id}/txtads.xml", "txtad", $request, 'POST');
+                return $this->hook("/campaigns/{$campaign_id}/txtads.json", "txtad", $request, 'POST');
         }
 
 
         /* Merchants: Update a text ad */
         function txtad_update($campaign_id, $txtad_id, $txtad) {
                 $request['txtad'] = $txtad;
-                return $this->hook("/campaigns/{$campaign_id}/txtads/{$txtad_id}.xml", "txtad", $request, 'PUT');
+                return $this->hook("/campaigns/{$campaign_id}/txtads/{$txtad_id}.json", "txtad", $request, 'PUT');
         }
 
         /* Merchants: Destroy a text ad */
         function txtad_destroy($campaign_id, $txtad_id) {
-                return $this->hook("/campaigns/{$campaign_id}/txtads/{$txtad_id}.xml", "txtad", null, 'DELETE');
+                return $this->hook("/campaigns/{$campaign_id}/txtads/{$txtad_id}.json", "txtad", null, 'DELETE');
         }
 
         /*=========*/
@@ -353,12 +364,12 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/campaigns/{$campaign_id}/banners.xml", "banner", $request, 'GET');
+                return $this->hook("/campaigns/{$campaign_id}/banners.json", "banner", $request, 'GET');
         }
 
         /* Display information about a banner */
         function banner_show($campaign_id, $banner_id) {
-                return $this->hook("/campaigns/{$campaign_id}/banners/{$banner_id}.xml", "banner");
+                return $this->hook("/campaigns/{$campaign_id}/banners/{$banner_id}.json", "banner");
         }
 
         /* Search for banners in a campaign */
@@ -368,7 +379,7 @@ class TPerformant {
                 $request['search']  = $search;
                 $request['sort']    = $sort;
 
-                return $this->hook("/campaigns/{$campaign_id}/banners/search.xml", "banner", $request, 'GET');
+                return $this->hook("/campaigns/{$campaign_id}/banners/search.json", "banner", $request, 'GET');
         }
 
         /* Merchants: Create a banner */
@@ -376,18 +387,18 @@ class TPerformant {
                 $request['banner'] = $banner;
                 $request['banner_picture'] = $banner_picture;
 
-                return $this->hook("/campaigns/{$campaign_id}/banners.xml", "banner", $request, 'POST');
+                return $this->hook("/campaigns/{$campaign_id}/banners.json", "banner", $request, 'POST');
         }
 
         /* Merchants: Update a banner */
         function banner_update($campaign_id, $banner_id, $banner) {
                 $request['banner'] = $banner;
-                return $this->hook("/campaigns/{$campaign_id}/banners/{$banner_id}.xml", "banner", $request, 'PUT');
+                return $this->hook("/campaigns/{$campaign_id}/banners/{$banner_id}.json", "banner", $request, 'PUT');
         }
 
         /* Merchants: Destroy a banner */
         function banner_destroy($campaign_id, $banner_id) {
-                return $this->hook("/campaigns/{$campaign_id}/banners/{$banner_id}.xml", "banner", null, 'DELETE');
+                return $this->hook("/campaigns/{$campaign_id}/banners/{$banner_id}.json", "banner", null, 'DELETE');
         }
 
         /*===============*/
@@ -398,12 +409,12 @@ class TPerformant {
         function product_stores_list($campaign_id) {
                 $request['campaign_id'] = $campaign_id;
 
-                return $this->hook("/product_stores.xml", "product-store", $request);
+                return $this->hook("/product_stores.json", "product-store", $request);
         }
 
         /* Show a Product Store */
         function product_store_show($product_store_id) {
-                return $this->hook("/product_stores/{$product_store_id}.xml", "product-store");
+                return $this->hook("/product_stores/{$product_store_id}.json", "product-store");
         }
 
         /* Show Products from a Product Store */
@@ -415,14 +426,14 @@ class TPerformant {
                 if ($uniq_products)
                   $request['uniq_products'] = $uniq_products;
 
-                return $this->hook("/product_stores/{$product_store_id}/showitems.xml", "product-store-data", $request);
+                return $this->hook("/product_stores/{$product_store_id}/showitems.json", "product-store-data", $request);
         }
 
         /* Show a Product from a Product Store */
         function product_store_showitem($product_store_id, $product_id) {
                 $request['product_id'] = $product_id;
 
-                return $this->hook("/product_stores/{$product_store_id}/showitem.xml", "product-store-data", $request);
+                return $this->hook("/product_stores/{$product_store_id}/showitem.json", "product-store-data", $request);
         }
 
 
@@ -441,18 +452,18 @@ class TPerformant {
                 if (!$product_store_id)
                   $product_store_id = 'all';
 
-                return $this->hook("/product_stores/{$product_store_id}/searchpr.xml", "product-store-data", $request, 'GET');
+                return $this->hook("/product_stores/{$product_store_id}/searchpr.json", "product-store-data", $request, 'GET');
         }
 
         /* Merchants: Update a Product Store */
         function product_store_update($product_store_id, $product_store) {
                 $request['product_store'] = $product_store;
-                return $this->hook("/product_stores/{$product_store_id}.xml", "product-store", $request, 'PUT');
+                return $this->hook("/product_stores/{$product_store_id}.json", "product-store", $request, 'PUT');
         }
 
         /* Merchants: Destroy a Product Store */
         function product_store_destroy($product_store_id) {
-                return $this->hook("/product_stores/{$product_store_id}.xml", "product-store", null, 'DELETE');
+                return $this->hook("/product_stores/{$product_store_id}.json", "product-store", null, 'DELETE');
         }
 
         /* 
@@ -465,7 +476,7 @@ class TPerformant {
         function product_store_createitem($product_store_id, $product) {
                 $request['product'] = $product;
 
-                return $this->hook("/product_stores/{$product_store_id}/createitem.xml", "product-store-data", $request, 'POST');
+                return $this->hook("/product_stores/{$product_store_id}/createitem.json", "product-store-data", $request, 'POST');
         }
 
         /* Merchants: Update a product */
@@ -473,14 +484,14 @@ class TPerformant {
                 $request['product'] = $product;
                 $request['product_id']   = $product_id;
 
-                return $this->hook("/product_stores/{$product_store_id}/updateitem.xml", "product-store-data", $request, 'PUT');
+                return $this->hook("/product_stores/{$product_store_id}/updateitem.json", "product-store-data", $request, 'PUT');
         }
 
         /* Merchants: Destroy a product */
         function product_store_destroyitem($product_store_id, $product_id) {
         	$request['pr_id'] = $product_id;
 
-                return $this->hook("/product_stores/{$product_store_id}/destroyitem.xml", "product-store-data", $request, 'DELETE');
+                return $this->hook("/product_stores/{$product_store_id}/destroyitem.json", "product-store-data", $request, 'DELETE');
         }
 
         /*=====================*/
@@ -489,12 +500,12 @@ class TPerformant {
         
         /* Affiliates: List Ad Groups */
         function ad_groups_list() {
-                return $this->hook("/ad_groups.xml", "ad_group", null, "GET");
+                return $this->hook("/ad_groups.json", "ad_group", null, "GET");
         }
 
         /* Affiliates: Display information about an Ad Group */
         function ad_group_show($ad_group_id) {
-                return $this->hook("/ad_groups/{$ad_group_id}.xml", "ad_group", null, "GET");
+                return $this->hook("/ad_groups/{$ad_group_id}.json", "ad_group", null, "GET");
         }
 
         /* Affiliates: Add Item to Ad Group / Create new Ad Group */
@@ -505,12 +516,12 @@ class TPerformant {
                 $request['tool_type'] = $tool_type;
                 $request['tool_id']   = $tool_id;
 
-                return $this->hook("/ad_groups/createitem.xml", "ad_group", $request, "POST");
+                return $this->hook("/ad_groups/createitem.json", "ad_group", $request, "POST");
         }
 
         /* Affiliates: Destroy an Ad Group */
         function ad_group_destroy($ad_group_id) {
-                return $this->hook("/ad_groups/{$ad_group_id}.xml", "ad_group", null, "DELETE");
+                return $this->hook("/ad_groups/{$ad_group_id}.json", "ad_group", null, "DELETE");
         }
 
 	/* Affiliates: Delete an Tool from a Group. $tooltype is one of 'txtlink', 'txtad' or 'banner'. */
@@ -518,7 +529,7 @@ class TPerformant {
                 $request['tool_type'] = $tool_type;
                 $request['tool_id']   = $tool_id;
 
-                return $this->hook("/ad_groups/{$ad_group_id}/destroyitem.xml", "ad_group", $request, "DELETE");
+                return $this->hook("/ad_groups/{$ad_group_id}/destroyitem.json", "ad_group", $request, "DELETE");
         }
 
         /*=================*/
@@ -527,27 +538,27 @@ class TPerformant {
 
         /* Affiliates: List Feeds */
         function feeds_list() {
-                return $this->hook("/feeds.xml", "feed", null, "GET");
+                return $this->hook("/feeds.json", "feed", null, "GET");
         }
 
         /* Affiliates: Create a Feed */
         function feed_create($feed) {
                 $request['feed'] = $feed;
 
-                return $this->hook("/feeds.xml", "feed", $request, 'POST');
+                return $this->hook("/feeds.json", "feed", $request, 'POST');
         }
 
         /* Affiliates: Update a Feed */
         function feed_update($feed_id, $feed) {
                 $request['feed'] = $feed;
 
-                return $this->hook("/feeds/{$feed_id}.xml", "feed", $request, 'PUT');
+                return $this->hook("/feeds/{$feed_id}.json", "feed", $request, 'PUT');
         }
 
 
         /* Affiliates: Destroy a Feed */
         function feed_destroy($feed_id) {
-                return $this->hook("/feeds/{$feed_id}.xml", "feed", null, "DELETE");
+                return $this->hook("/feeds/{$feed_id}.json", "feed", null, "DELETE");
         }
 
         /*==========*/
@@ -559,7 +570,7 @@ class TPerformant {
                 $request['page']      = $page;
                 $request['perpage']   = $perpage;
 
-                return $this->hook("/messages.xml", "message", null, "GET");
+                return $this->hook("/messages.json", "message", null, "GET");
         }
 
         /* List sent messages. Displays the first 6 entries by default. */
@@ -567,17 +578,17 @@ class TPerformant {
                 $request['page']      = $page;
                 $request['perpage']   = $perpage;
 
-                return $this->hook("/messages/sent.xml", "message", null, "GET");
+                return $this->hook("/messages/sent.json", "message", null, "GET");
         }
 
         /* Display information about a message */
         function message_show($message_id) {
-                return $this->hook("/messages/{$message_id}.xml", "message");
+                return $this->hook("/messages/{$message_id}.json", "message");
         }
 
         /* Destroy a message */
         function message_destroy($message_id) {
-                return $this->hook("/messages/{$message_id}.xml", "message", null, 'DELETE');
+                return $this->hook("/messages/{$message_id}.json", "message", null, 'DELETE');
         }
 
         /*=================================*/
@@ -594,7 +605,7 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage;
 
-                return $this->hook("/users/all/affiliate_invoices.xml", "affiliate-invoice", $request, 'GET');
+                return $this->hook("/users/all/affiliate_invoices.json", "affiliate-invoice", $request, 'GET');
         }
 
         /* Search for Affiliate Invoices */
@@ -603,7 +614,7 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/affiliate_invoices/search.xml", "affiliate-invoice", $request, 'POST');
+                return $this->hook("/affiliate_invoices/search.json", "affiliate-invoice", $request, 'POST');
         }
 
         /* Create an Affiliate Invoice */
@@ -612,7 +623,7 @@ class TPerformant {
                 $request['commissions'] = $commissions;
                 $request['taxes'] = $taxes;
 
-                return $this->hook("/users/$user_id/affiliate_invoices.xml", "affiliate-invoice", $request, 'POST');
+                return $this->hook("/users/$user_id/affiliate_invoices.json", "affiliate-invoice", $request, 'POST');
         }      
  
         /* Update an Affiliate Invoice */      
@@ -620,12 +631,12 @@ class TPerformant {
                 $request['affiliate_invoice'] = $affiliate_invoice;
                 $request['taxes'] = $taxes;
 
-                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.xml", "affiliate-invoice", $request, 'PUT');
+                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.json", "affiliate-invoice", $request, 'PUT');
         }
 
         /* Destroy an Affiliate Invoice */
         function admin_affiliate_invoice_destroy($user_id, $affiliate_invoice_id) {
-                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.xml", "affiliate-invoice", null, 'DELETE');
+                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.json", "affiliate-invoice", null, 'DELETE');
         }
 
         /*=====================*/
@@ -637,7 +648,7 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage;
 
-                return $this->hook("/users/all/advertiser_invoices.xml", "advertiser-invoice", $request, 'GET');
+                return $this->hook("/users/all/advertiser_invoices.json", "advertiser-invoice", $request, 'GET');
         }
 
         /* Search for Advertiser Invoices */
@@ -646,29 +657,29 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/advertiser_invoices/search.xml", "advertiser-invoice", $request, 'POST');
+                return $this->hook("/advertiser_invoices/search.json", "advertiser-invoice", $request, 'POST');
         }
 
         /* Create an Advertiser Invoice */
-        function admin_advertiser_invoice_create($user_id, $advertiser_invoice, $commissions, $taxes) {
+        function admin_advertiser_invoice_create($user_id, $advertiser_invoice, $commissions, $fees) {
                 $request['advertiser_invoice'] = $advertiser_invoice;
                 $request['commissions'] = $commissions;
-                $request['taxes'] = $taxes;
+                $request['fees'] = $fees;
 
-                return $this->hook("/users/$user_id/advertiser_invoices.xml", "advertiser-invoice", $request, 'POST');
+                return $this->hook("/users/$user_id/advertiser_invoices.json", "advertiser-invoice", $request, 'POST');
         }
 
         /* Update an Advertiser Invoice */
-        function admin_advertiser_invoice_update($user_id, $advertiser_invoice_id, $advertiser_invoice, $taxes=null) {
+        function admin_advertiser_invoice_update($user_id, $advertiser_invoice_id, $advertiser_invoice, $fees=null) {
                 $request['advertiser_invoice'] = $advertiser_invoice;
-                $request['taxes'] = $taxes;
+                $request['fees'] = $fees;
 
-                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.xml", "advertiser-invoice", $request, 'PUT');
+                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.json", "advertiser-invoice", $request, 'PUT');
         }
 
         /* Destroy an Advertiser Invoice */
         function admin_advertiser_invoice_destroy($user_id, $advertiser_invoice_id) {
-                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.xml", "advertiser-invoice", null, 'DELETE');
+                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.json", "advertiser-invoice", null, 'DELETE');
         }
 
 
@@ -681,7 +692,7 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage;
 
-                return $this->hook("/campaigns.xml", "campaign", $request, 'GET');
+                return $this->hook("/campaigns.json", "campaign", $request, 'GET');
         }
 
         /* Search for Advertiser Invoices */
@@ -690,21 +701,21 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/campaigns/search.xml", "campaign", $request, 'POST');
+                return $this->hook("/campaigns/search.json", "campaign", $request, 'POST');
         }
 
 
-        /* Search for Advertiser Invoices */
+        /* Update a Campaign */
         function admin_campaign_update($campaign_id, $suspend=null, $reset=null) {
                 $request['suspend'] = $suspend;
                 $request['reset']   = $reset;
 
-                return $this->hook("/campaigns/$campaign_id.xml", "campaign", $request, 'PUT');
+                return $this->hook("/campaigns/$campaign_id.json", "campaign", $request, 'PUT');
         }
 
         /* Destroy a Campaign */
         function admin_campaign_destroy($campaign_id) {
-                return $this->hook("/campaigns/$campaign_id.xml", "campaign", null, 'DELETE');
+                return $this->hook("/campaigns/$campaign_id.json", "campaign", null, 'DELETE');
         }
 
         /*===================*/
@@ -738,19 +749,19 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/deposits.xml", "deposit", $request, 'GET');
+                return $this->hook("/deposits.json", "deposit", $request, 'GET');
         }
 
         /* Create a Deposit */
         function admin_deposit_create($deposit) {
                 $request['deposit'] = $deposit;
 
-                return $this->hook("/users/all/deposits.xml", "deposit", $request, 'POST');
+                return $this->hook("/users/all/deposits.json", "deposit", $request, 'POST');
         }
 
         /* Destroy a Deposit */
         function admin_deposit_destroy($user_id, $deposit_id) {
-                return $this->hook("/users/$user_id/deposits/$deposit_id.xml", "deposit", null, 'DELETE');
+                return $this->hook("/users/$user_id/deposits/$deposit_id.json", "deposit", null, 'DELETE');
         }
 
 
@@ -763,7 +774,7 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/users.xml", "user", $request, 'GET');
+                return $this->hook("/users.json", "user", $request, 'GET');
         }
 
         /* Search for Users */
@@ -772,12 +783,12 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/users/search.xml", "user", $request, 'POST');
+                return $this->hook("/users/search.json", "user", $request, 'POST');
         }
 
         /* List Pending Users */
         function admin_users_pending_list() {
-                return $this->hook("/users/pending.xml", "user", null, 'GET');
+                return $this->hook("/users/pending.json", "user", null, 'GET');
         }
 
         /* Process (Accept/Reject) a Pending User */
@@ -785,12 +796,12 @@ class TPerformant {
                 $request['status'] = $status;
                 $request['message'] = $message;
 
-                return $this->hook("/users/$user_id/pending_process.xml", "user", $request, 'POST');
+                return $this->hook("/users/$user_id/pending_process.json", "user", $request, 'POST');
         }
 
         /* Destroy a User */
         function admin_user_destroy($user_id) {
-                return $this->hook("/users/$user_id.xml", "user", null, 'DELETE');
+                return $this->hook("/users/$user_id.json", "user", null, 'DELETE');
 	}
 
         /*=======*/
@@ -799,7 +810,7 @@ class TPerformant {
     
         /* List Hooks */
         function hooks_list($oauth_token_key='current') {
-               return $this->hook("/oauth_clients/{$oauth_token_key}/hooks.xml", "hook", null, 'GET');
+               return $this->hook("/oauth_clients/{$oauth_token_key}/hooks.json", "hook", null, 'GET');
         }
 
 
@@ -807,12 +818,12 @@ class TPerformant {
         function hook_create($hook, $oauth_token_key='current') {
                $request['hook'] = $hook;
 
-               return $this->hook("/oauth_clients/{$oauth_token_key}/hooks.xml", "hook", $request, 'POST');
+               return $this->hook("/oauth_clients/{$oauth_token_key}/hooks.json", "hook", $request, 'POST');
         }
 
         /* Destroy a Hook */
         function hook_destroy($hook_id, $oauth_token_key='current') {
-                return $this->hook("/oauth_clients/{$oauth_token_key}/hooks/{$hook_id}.xml", "hook", null, 'DELETE');
+                return $this->hook("/oauth_clients/{$oauth_token_key}/hooks/{$hook_id}.json", "hook", null, 'DELETE');
         }
 
 
@@ -821,23 +832,28 @@ class TPerformant {
         /*===========================*/
 	
 	function hook($url,$expected, $send = null, $method = 'GET') {
-		$returned = $this->unserialize($this->request($url, $send, $method));
-		$placement = $expected;
-		if (isset($returned->{$expected})) {
-			$this->{$placement} = $returned->{$expected};	
-			return $returned->{$expected};
+		$returned = json_decode($this->request($url, $send, $method));
+		$result = null;
+
+		if (is_array($returned)) {
+			$result = array();
+			foreach($returned as $item) {
+				if ($item->{$expected})
+					array_push($result, $item->{$expected});
+			}
 		} else {
-			$this->{$placement} = $returned;
-			return $returned;
+			if ($returned->{$expected})
+				$result = $returned->{$expected};
 		}
+		return $result;
 	}
 	
 	function request($url, $params = null, $method) {
                 if (strpos($method, "admin_") == 0) {
-                  $admin_url = str_replace("api.", "admin.", $url);
-                  $url = $this->host . "/" . $admin_url;
+			$admin_url = str_replace("api.", "admin.", $url);
+			$url = $this->host . $admin_url;
                 } else {
-                  $url = $this->host . "/" . $this->version . $url;
+			$url = $this->host . $this->version . $url;
                 }
 
                 if ($this->auth_type == 'simple') {
@@ -855,13 +871,13 @@ class TPerformant {
 
                 if ($params) {
                         //serialize the data
-                        $xml = $this->serialize($params);
-                        ($xml)?$req->setBody($xml):false;
+                        $json = json_encode($params);
+                        ($json)?$req->setBody($json):false;
                 }
 
                 //set the headers
-                $req->setHeader("Accept", "application/xml");
-                $req->setHeader("Content-Type", "application/xml");
+                $req->setHeader("Accept", "application/json");
+                $req->setHeader("Content-Type", "application/json");
 
                 $response = $req->send();
 
@@ -873,17 +889,17 @@ class TPerformant {
         }
 
         function oauthHttpRequest($url, $params, $method) {
-                $xml = null;
+                $json = null;
 
                 //set the headers
-                $this->oauthRequest->setHeader("Accept", "application/xml");
-                $this->oauthRequest->setHeader("Content-Type", "application/xml");
+                $this->oauthRequest->setHeader("Accept", "application/json");
+                $this->oauthRequest->setHeader("Content-Type", "application/json");
 
                 if ($params) {
                         //serialize the data
-                        $xml = $this->serialize($params);
+                        $json = json_encode($params);
 
-                        $this->oauthRequest->setBody($xml);
+                        $this->oauthRequest->setBody($json);
                         $this->oauth->accept($this->oauthRequest);
                 }
                 
@@ -891,23 +907,6 @@ class TPerformant {
                 return $response->getBody();
         }
 
-	function serialize($data) {
-		$options = array(	XML_SERIALIZER_OPTION_MODE => XML_SERIALIZER_MODE_SIMPLEXML,
-                                        XML_SERIALIZER_OPTION_ROOT_NAME   => 'request',
-                                        XML_SERIALIZER_OPTION_CDATA_SECTIONS => true,
-                                    	XML_SERIALIZER_OPTION_INDENT => '  ');
-		$serializer = new XML_Serializer($options);
-		$result = $serializer->serialize($data);
-		return ($result)?$serializer->getSerializedData():false;
-	}
-	
-	function unserialize($xml) {
-		$options = array (XML_UNSERIALIZER_OPTION_COMPLEXTYPE => 'object');
-		$unserializer = new XML_Unserializer($options);
-		$status = $unserializer->unserialize($xml); 
-	    $data = (PEAR::isError($status))?$status->getMessage():$unserializer->getUnserializedData();
-		return $data;
-	}
 }
 
 
