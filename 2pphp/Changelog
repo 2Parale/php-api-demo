@@ -1,5 +1,10 @@
 Changelog
 =========
+
+* Tue Apr 19 12:54:25 EEST 2011 - Radu Spineanu <radu@2performant.com>
+  - 0.4.1 release
+  - fixed admin_ methods to properly create requests
+
 * Sat Apr 16 19:49:36 EEST 2011 - Radu Spineanu <radu@2performant.com>
   - 0.4 release
   - API through JSON

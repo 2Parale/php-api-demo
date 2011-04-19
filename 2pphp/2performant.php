@@ -1,7 +1,7 @@
 <?php
 /* ================================
    2Performant.com Network API 
-   ver. 0.4.0
+   ver. 0.4.1
    http://help.2performant.com/API
    ================================ */
 
@@ -409,12 +409,12 @@ class TPerformant {
         function product_stores_list($campaign_id) {
                 $request['campaign_id'] = $campaign_id;
 
-                return $this->hook("/product_stores.json", "product-store", $request);
+                return $this->hook("/product_stores.json", "product_store", $request);
         }
 
         /* Show a Product Store */
         function product_store_show($product_store_id) {
-                return $this->hook("/product_stores/{$product_store_id}.json", "product-store");
+                return $this->hook("/product_stores/{$product_store_id}.json", "product_store");
         }
 
         /* Show Products from a Product Store */
@@ -426,14 +426,14 @@ class TPerformant {
                 if ($uniq_products)
                   $request['uniq_products'] = $uniq_products;
 
-                return $this->hook("/product_stores/{$product_store_id}/showitems.json", "product-store-data", $request);
+                return $this->hook("/product_stores/{$product_store_id}/showitems.json", "product_store_data", $request);
         }
 
         /* Show a Product from a Product Store */
         function product_store_showitem($product_store_id, $product_id) {
                 $request['product_id'] = $product_id;
 
-                return $this->hook("/product_stores/{$product_store_id}/showitem.json", "product-store-data", $request);
+                return $this->hook("/product_stores/{$product_store_id}/showitem.json", "product_store_data", $request);
         }
 
 
@@ -452,18 +452,18 @@ class TPerformant {
                 if (!$product_store_id)
                   $product_store_id = 'all';
 
-                return $this->hook("/product_stores/{$product_store_id}/searchpr.json", "product-store-data", $request, 'GET');
+                return $this->hook("/product_stores/{$product_store_id}/searchpr.json", "product_store_data", $request, 'GET');
         }
 
         /* Merchants: Update a Product Store */
         function product_store_update($product_store_id, $product_store) {
                 $request['product_store'] = $product_store;
-                return $this->hook("/product_stores/{$product_store_id}.json", "product-store", $request, 'PUT');
+                return $this->hook("/product_stores/{$product_store_id}.json", "product_store", $request, 'PUT');
         }
 
         /* Merchants: Destroy a Product Store */
         function product_store_destroy($product_store_id) {
-                return $this->hook("/product_stores/{$product_store_id}.json", "product-store", null, 'DELETE');
+                return $this->hook("/product_stores/{$product_store_id}.json", "product_store", null, 'DELETE');
         }
 
         /* 
@@ -476,7 +476,7 @@ class TPerformant {
         function product_store_createitem($product_store_id, $product) {
                 $request['product'] = $product;
 
-                return $this->hook("/product_stores/{$product_store_id}/createitem.json", "product-store-data", $request, 'POST');
+                return $this->hook("/product_stores/{$product_store_id}/createitem.json", "product_store_data", $request, 'POST');
         }
 
         /* Merchants: Update a product */
@@ -484,14 +484,14 @@ class TPerformant {
                 $request['product'] = $product;
                 $request['product_id']   = $product_id;
 
-                return $this->hook("/product_stores/{$product_store_id}/updateitem.json", "product-store-data", $request, 'PUT');
+                return $this->hook("/product_stores/{$product_store_id}/updateitem.json", "product_store_data", $request, 'PUT');
         }
 
         /* Merchants: Destroy a product */
         function product_store_destroyitem($product_store_id, $product_id) {
         	$request['pr_id'] = $product_id;
 
-                return $this->hook("/product_stores/{$product_store_id}/destroyitem.json", "product-store-data", $request, 'DELETE');
+                return $this->hook("/product_stores/{$product_store_id}/destroyitem.json", "product_store_data", $request, 'DELETE');
         }
 
         /*=====================*/
@@ -605,7 +605,7 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage;
 
-                return $this->hook("/users/all/affiliate_invoices.json", "affiliate-invoice", $request, 'GET');
+                return $this->hook("/users/all/affiliate_invoices.json", "affiliate_invoice", $request, 'GET', 'admin');
         }
 
         /* Search for Affiliate Invoices */
@@ -614,7 +614,7 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/affiliate_invoices/search.json", "affiliate-invoice", $request, 'POST');
+                return $this->hook("/affiliate_invoices/search.json", "affiliate_invoice", $request, 'POST', 'admin');
         }
 
         /* Create an Affiliate Invoice */
@@ -623,7 +623,7 @@ class TPerformant {
                 $request['commissions'] = $commissions;
                 $request['taxes'] = $taxes;
 
-                return $this->hook("/users/$user_id/affiliate_invoices.json", "affiliate-invoice", $request, 'POST');
+                return $this->hook("/users/$user_id/affiliate_invoices.json", "affiliate_invoice", $request, 'POST', 'admin');
         }      
  
         /* Update an Affiliate Invoice */      
@@ -631,12 +631,12 @@ class TPerformant {
                 $request['affiliate_invoice'] = $affiliate_invoice;
                 $request['taxes'] = $taxes;
 
-                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.json", "affiliate-invoice", $request, 'PUT');
+                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.json", "affiliate_invoice", $request, 'PUT', 'admin');
         }
 
         /* Destroy an Affiliate Invoice */
         function admin_affiliate_invoice_destroy($user_id, $affiliate_invoice_id) {
-                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.json", "affiliate-invoice", null, 'DELETE');
+                return $this->hook("/users/$user_id/affiliate_invoices/$affiliate_invoice_id.json", "affiliate_invoice", null, 'DELETE', 'admin');
         }
 
         /*=====================*/
@@ -648,7 +648,7 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage;
 
-                return $this->hook("/users/all/advertiser_invoices.json", "advertiser-invoice", $request, 'GET');
+                return $this->hook("/users/all/advertiser_invoices.json", "advertiser_invoice", $request, 'GET', 'admin');
         }
 
         /* Search for Advertiser Invoices */
@@ -657,7 +657,7 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/advertiser_invoices/search.json", "advertiser-invoice", $request, 'POST');
+                return $this->hook("/advertiser_invoices/search.json", "advertiser_invoice", $request, 'POST', 'admin');
         }
 
         /* Create an Advertiser Invoice */
@@ -666,7 +666,7 @@ class TPerformant {
                 $request['commissions'] = $commissions;
                 $request['fees'] = $fees;
 
-                return $this->hook("/users/$user_id/advertiser_invoices.json", "advertiser-invoice", $request, 'POST');
+                return $this->hook("/users/$user_id/advertiser_invoices.json", "advertiser_invoice", $request, 'POST', 'admin');
         }
 
         /* Update an Advertiser Invoice */
@@ -674,12 +674,12 @@ class TPerformant {
                 $request['advertiser_invoice'] = $advertiser_invoice;
                 $request['fees'] = $fees;
 
-                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.json", "advertiser-invoice", $request, 'PUT');
+                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.json", "advertiser_invoice", $request, 'PUT', 'admin');
         }
 
         /* Destroy an Advertiser Invoice */
         function admin_advertiser_invoice_destroy($user_id, $advertiser_invoice_id) {
-                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.json", "advertiser-invoice", null, 'DELETE');
+                return $this->hook("/users/$user_id/advertiser_invoices/$advertiser_invoice_id.json", "advertiser_invoice", null, 'DELETE', 'admin');
         }
 
 
@@ -692,7 +692,7 @@ class TPerformant {
                 $request['page']        = $page;
                 $request['perpage']     = $perpage;
 
-                return $this->hook("/campaigns.json", "campaign", $request, 'GET');
+                return $this->hook("/campaigns.json", "campaign", $request, 'GET', 'admin');
         }
 
         /* Search for Advertiser Invoices */
@@ -701,7 +701,7 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/campaigns/search.json", "campaign", $request, 'POST');
+                return $this->hook("/campaigns/search.json", "campaign", $request, 'POST', 'admin');
         }
 
 
@@ -710,12 +710,12 @@ class TPerformant {
                 $request['suspend'] = $suspend;
                 $request['reset']   = $reset;
 
-                return $this->hook("/campaigns/$campaign_id.json", "campaign", $request, 'PUT');
+                return $this->hook("/campaigns/$campaign_id.json", "campaign", $request, 'PUT', 'admin');
         }
 
         /* Destroy a Campaign */
         function admin_campaign_destroy($campaign_id) {
-                return $this->hook("/campaigns/$campaign_id.json", "campaign", null, 'DELETE');
+                return $this->hook("/campaigns/$campaign_id.json", "campaign", null, 'DELETE', 'admin');
         }
 
         /*===================*/
@@ -728,7 +728,7 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/commissions/affiliates", "commission", $request, 'GET');
+                return $this->hook("/commissions/affiliates", "commission", $request, 'GET', 'admin');
         }
 
         /* List Advertiser Commissions  */
@@ -737,7 +737,7 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/commissions/advertisers", "commission", $request, 'GET');
+                return $this->hook("/commissions/advertisers", "commission", $request, 'GET', 'admin');
         }
 
         /*==========*/
@@ -749,19 +749,19 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/deposits.json", "deposit", $request, 'GET');
+                return $this->hook("/deposits.json", "deposit", $request, 'GET', 'admin');
         }
 
         /* Create a Deposit */
         function admin_deposit_create($deposit) {
                 $request['deposit'] = $deposit;
 
-                return $this->hook("/users/all/deposits.json", "deposit", $request, 'POST');
+                return $this->hook("/users/all/deposits.json", "deposit", $request, 'POST', 'admin');
         }
 
         /* Destroy a Deposit */
         function admin_deposit_destroy($user_id, $deposit_id) {
-                return $this->hook("/users/$user_id/deposits/$deposit_id.json", "deposit", null, 'DELETE');
+                return $this->hook("/users/$user_id/deposits/$deposit_id.json", "deposit", null, 'DELETE', 'admin');
         }
 
 
@@ -774,7 +774,7 @@ class TPerformant {
                 $request['page']    = $page;
                 $request['perpage'] = $perpage;
 
-                return $this->hook("/users.json", "user", $request, 'GET');
+                return $this->hook("/users.json", "user", $request, 'GET', 'admin');
         }
 
         /* Search for Users */
@@ -783,12 +783,12 @@ class TPerformant {
                 $request['perpage'] = $perpage;
                 $request['search']  = $search;
 
-                return $this->hook("/users/search.json", "user", $request, 'POST');
+                return $this->hook("/users/search.json", "user", $request, 'POST', 'admin');
         }
 
         /* List Pending Users */
         function admin_users_pending_list() {
-                return $this->hook("/users/pending.json", "user", null, 'GET');
+                return $this->hook("/users/pending.json", "user", null, 'GET', 'admin');
         }
 
         /* Process (Accept/Reject) a Pending User */
@@ -796,12 +796,12 @@ class TPerformant {
                 $request['status'] = $status;
                 $request['message'] = $message;
 
-                return $this->hook("/users/$user_id/pending_process.json", "user", $request, 'POST');
+                return $this->hook("/users/$user_id/pending_process.json", "user", $request, 'POST', 'admin');
         }
 
         /* Destroy a User */
         function admin_user_destroy($user_id) {
-                return $this->hook("/users/$user_id.json", "user", null, 'DELETE');
+                return $this->hook("/users/$user_id.json", "user", null, 'DELETE', 'admin');
 	}
 
         /*=======*/
@@ -831,8 +831,8 @@ class TPerformant {
         /* Actually process the data */
         /*===========================*/
 	
-	function hook($url,$expected, $send = null, $method = 'GET') {
-		$returned = json_decode($this->request($url, $send, $method));
+	function hook($url,$expected, $send = null, $method = 'GET', $where = 'main') {
+		$returned = json_decode($this->request($url, $send, $method, $where));
 		$result = null;
 
 		if (is_array($returned)) {
@@ -848,12 +848,12 @@ class TPerformant {
 		return $result;
 	}
 	
-	function request($url, $params = null, $method) {
-                if (strpos($method, "admin_") == 0) {
+	function request($url, $params = null, $method, $where) {
+                if ($where == 'admin') {
 			$admin_url = str_replace("api.", "admin.", $url);
-			$url = $this->host . $admin_url;
+			$url = $this->host . '/' . $admin_url;
                 } else {
-			$url = $this->host . $this->version . $url;
+			$url = $this->host . '/' . $this->version . $url;
                 }
 
                 if ($this->auth_type == 'simple') {
