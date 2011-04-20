@@ -1,6 +1,11 @@
 Changelog
 =========
 
+* Wed Apr 20 16:58:08 EEST 2011 - Radu Spineanu <radu@2performant.com>
+  - 0.4.2 release
+  - fixed admin request buiding to properly add host
+  - disable SSL certificate checks for https calls
+
 * Tue Apr 19 12:54:25 EEST 2011 - Radu Spineanu <radu@2performant.com>
   - 0.4.1 release
   - fixed admin_ methods to properly create requests

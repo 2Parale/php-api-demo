@@ -1,7 +1,7 @@
 <?php
 /* ================================
    2Performant.com Network API 
-   ver. 0.4.1
+   ver. 0.4.2
    http://help.2performant.com/API
    ================================ */
 
@@ -850,8 +850,8 @@ class TPerformant {
 	
 	function request($url, $params = null, $method, $where) {
                 if ($where == 'admin') {
-			$admin_url = str_replace("api.", "admin.", $url);
-			$url = $this->host . '/' . $admin_url;
+			$admin_host = str_replace("api.", "admin.", $this->host);
+			$url = $admin_host . $url;
                 } else {
 			$url = $this->host . '/' . $this->version . $url;
                 }
@@ -864,7 +864,7 @@ class TPerformant {
 	}
 
         function simpleHttpRequest($url, $params, $method) {
-                $req = new HTTP_Request2($url, $method);
+                $req = new HTTP_Request2($url, $method, array ('ssl_verify_peer' => false, 'ssl_verify_host' => false));
 
                 //authorize
                 $req->setAuth($this->user, $this->pass);
